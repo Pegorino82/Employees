@@ -1,0 +1,27 @@
+<form method="get" action="{% url 'employees:list' %}">
+    <div class="form-row align-items-center">
+        <div class="col-sm-3 my-1">
+            <label for="inputState">Отдел</label>
+            <select name="unit" id="inputState" class="form-control">
+                <option name="unit">Все отделы
+                </option>
+                {% for unit in units %}
+                <option {% if request.GET.unit == unit.title %}selected{% endif %} name="unit">{{ unit.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-auto my-1">
+            <div class="form-check">
+                <input name="is_working" class="form-check-input" {% if request.GET.is_working %}checked{% endif %}
+                       type="checkbox" id="autoSizingCheck2">
+                <label class="form-check-label" for="autoSizingCheck2">
+                    Работает
+                </label>
+            </div>
+        </div>
+        <div class="col-auto my-1">
+            <button type="submit" class="btn btn-primary">Применить</button>
+        </div>
+    </div>
+</form>

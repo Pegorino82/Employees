@@ -1,0 +1,29 @@
+{% extends 'company_employees/base.html' %}
+
+{% block content %}
+
+<ul class="nav nav-pills nav-fill">
+    {% for border in borders %}
+    <li class="nav-item">
+        <a
+            class="nav-link border border-primary
+            {%if request.GET.start == border.0 %}
+                active
+            {% elif not request.GET.start %}
+                {% if border.0 == 'А' %}
+                    active
+                {% endif %}
+            {% endif %}"
+            href="{% url 'employees:list_by_surname' %}?start={{border.0}}&stop={{border.1}}"
+        >
+            {{border.0}}-{{border.1}}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% include 'employees/includes/employees_table_by_surname.html' %}
+
+{% include 'employees/includes/table_pagination.html' %}
+
+{% endblock %}

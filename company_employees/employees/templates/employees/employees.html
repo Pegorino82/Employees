@@ -1,0 +1,11 @@
+{% extends 'company_employees/base.html' %}
+
+{% load my_filters %}
+
+{% block content %}
+
+{% include 'employees/includes/employees_table.html' %}
+
+{% include 'employees/includes/table_pagination.html' %}
+
+{% endblock %}
