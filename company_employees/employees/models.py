@@ -57,6 +57,32 @@ class Employee(models.Model):
         on_delete=models.CASCADE
     )
 
+    def __str__(self):
+        return f'{self.name} {self.patronymic} {self.surname}'
+
+    @classmethod
+    def filter_by_unit_and_working(cls, unit=None, is_working=None):
+        '''
+        Возвращает сотрудников отфильтрованных по отделу и статусу (работает или нет)
+        :param unit: название отдела
+        :param is_working: работающие (True) или все
+        :return: queryset
+        '''
+        if not unit and not is_working:
+            return cls.objects.all().order_by('surname')
+        q = Q()
+        if is_working:
+            q &= Q(finish_work=None)
+        if unit:
+            unit_ = Unit.objects.filter(title=unit)
+            try:
+                unit_id = unit_[0].id
+            except IndexError:
+                pass
+            else:
+                q &= Q(unit_id=unit_id)
+        return cls.objects.filter(q).order_by('surname')
+
     @classmethod
     def get_range(cls, start, stop=None):
         '''
