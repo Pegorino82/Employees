@@ -28,18 +28,16 @@ class EmployeesListView(ListView):
 class EmployeesSurnameView(ListView):
     model = Employee
     template_name = 'employees/employees_by_surname.html'
+    borders = Employee.get_groups(groups_num=6)
     extra_context = {
         'title': 'employees by surname',
-        'borders': Employee.get_groups(6)
+        'borders': borders
     }
 
     def get(self, request, *args, **kwargs):
         start = request.GET.get('start')
         stop = request.GET.get('stop')
-        if start and stop:
-            self.queryset = Employee.get_range(start, stop)
-        else:
-            self.queryset = Employee.get_range('А', 'Г')
+        self.queryset = Employee.get_range(start, stop)
         self.paginate_by = 7
         return super(EmployeesSurnameView, self).get(request, *args, **kwargs)
 

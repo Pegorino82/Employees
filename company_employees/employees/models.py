@@ -5,6 +5,35 @@ from collections import OrderedDict
 
 from units.models import Unit
 
+
+def separator(d, offset=1, groups_num=7):
+    '''
+    делит сотрудников на примерно равные группы
+    :param d: словарь вида {'А': 5, 'Б': 6...}
+    :param offset: отступ (вверх) от среднего количества сотрудников в группе
+    :param groups_num: количество групп
+    :return: список с группами
+    '''
+    one_group_contains = sum(d.values()) // groups_num
+    groups = []
+    for key, val in d.items():
+        if not val:
+            continue
+        if not groups:
+            groups.append({'chars': [key], 'count': val})
+        if key not in groups[-1]['chars']:
+            if groups[-1]['count'] + val <= one_group_contains * offset:
+                groups[-1]['chars'].append(key)
+                groups[-1]['count'] += val
+            else:
+                groups.append({'chars': [key], 'count': val})
+    if len(groups) > groups_num:
+        offset += 0.05
+        return separator(d, offset=offset, groups_num=groups_num)
+    else:
+        return list(map(lambda x: (x['chars'][0], x['chars'][-1]), groups))
+
+
 ALPHAS = []
 for i in range(1040, 1072):
     if i not in (1066, 1067, 1068):
@@ -84,16 +113,16 @@ class Employee(models.Model):
         return cls.objects.filter(q).order_by('surname')
 
     @classmethod
-    def get_range(cls, start, stop=None):
+    def get_range(cls, start=None, stop=None):
         '''
         Возвращает сотрудников, у которых фамилии начинаются на буквы в диапазоне [start, stop]
         :param start: начало диапазона
         :param stop: конец диапазона (вкл.)
         :return: queryset
         '''
+        start_index = ALPHAS.index(start) if start else 0
+        stop_index = ALPHAS.index(stop) if stop else start_index
         try:
-            start_index = ALPHAS.index(start)
-            stop_index = ALPHAS.index(stop) if stop else start_index
             query = cls.objects.filter(
                 reduce(
                     lambda q_obj, surname: q_obj | Q(surname__startswith=surname),
@@ -111,21 +140,9 @@ class Employee(models.Model):
         :param groups_num: количество групп
         :return: list
         '''
-        one_group_contains = cls.objects.all().count() // groups_num
         d = OrderedDict()
         for char in ALPHAS:
             d[char] = cls.objects.filter(surname__startswith=char).count()
-        groups = []
-        for key, val in d.items():
-            if not groups:
-                groups.append({'chars': [key], 'count': val})
-            if not val:
-                continue
-            if groups[-1]['count'] + val <= one_group_contains \
-                    or groups[-1]['count'] < one_group_contains / 2 \
-                    or groups[-1]['count'] + val < one_group_contains * 1.1:
-                groups[-1]['chars'].append(key)
-                groups[-1]['count'] += val
-            else:
-                groups.append({'chars': [key], 'count': val})
-        return list(map(lambda x: (x['chars'][0], x['chars'][-1]), groups))
+        groups = separator(d, groups_num=groups_num)
+        print(groups)
+        return groups
