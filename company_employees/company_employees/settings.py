@@ -92,7 +92,7 @@ except:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'postgres',
+            'NAME': 'employees',
             'USER': 'postgres',
             'HOST': 'database',
             'PORT': 5432
