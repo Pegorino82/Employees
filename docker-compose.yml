@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  proxy:
+    build: ./nginx
+    ports:
+      - '80:80'
+    volumes:
+      - static:/static
+      - media:/media
+    depends_on:
+      - server
+
+  database:
+    image: postgres:10.6
+
+  server:
+    build:
+      ./company_employees
+    command:
+      bash -c 'python manage.py runserver 0.0.0.0:8000'
+    ports:
+      - 8000:8000
+    depends_on:
+      - database
+    volumes:
+      - ./company_employees:/app
+      - static:/app/static
+      - media:/app/media
+
+volumes:
+  static:
+  media:
