@@ -17,31 +17,16 @@ services:
   server:
     build:
       ./company_employees
-    image:
-      empl
     command:
-      bash -c 'python manage.py runserver 0.0.0.0:8000'
+      bash -c 'python manage.py makemigrations&python manage.py migrate&python manage.py runserver 0.0.0.0:8000'
     ports:
       - 8000:8000
     depends_on:
-      - migrate
       - database
     volumes:
       - ./company_employees:/app
       - static:/app/static
       - media:/app/media
-
-  migrate:
-    image:
-      empl
-    command:
-      bash -c 'python manage.py migrate'
-    volumes:
-    - ./company_employees:/app
-    - static:/app/static
-    - media:/app/media
-    depends_on:
-    - database
 
 volumes:
   static:
