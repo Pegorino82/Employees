@@ -144,5 +144,4 @@ class Employee(models.Model):
         for char in ALPHAS:
             d[char] = cls.objects.filter(surname__startswith=char).count()
         groups = separator(d, groups_num=groups_num)
-        print(groups)
         return groups
