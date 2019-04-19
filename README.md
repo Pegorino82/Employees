@@ -2,18 +2,18 @@
 
 ##  starting with docker
 
-1. git clone https://github.com/Pegorino82/Employees.git
-2. docker-compose build
-3. docker-compose up
+1. `git clone https://github.com/Pegorino82/Employees.git`
+2. `docker-compose build`
+3. `docker-compose up`
 
 #### for create superuser or/and fill db with test data:
-1. git clone https://github.com/Pegorino82/Employees.git
-2. docker-compose build
-3. docker-compose start
-4. docker-compose exec server python manage.py fill_units
-5. docker-compose exec server python manage.py fill_employees
-6. docker-compose exec server python manage.py createsuperuser
-7. docker-compose up
+1. `git clone https://github.com/Pegorino82/Employees.git`
+2. `docker-compose build`
+3. `docker-compose start`
+4. `docker-compose exec server python manage.py fill_units`
+5. `docker-compose exec server python manage.py fill_employees`
+6. `docker-compose exec server python manage.py createsuperuser`
+7. `docker-compose up`
 
 
 ## if starting on local server add local_settings.py with 
