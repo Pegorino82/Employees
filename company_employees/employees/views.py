@@ -28,18 +28,27 @@ class EmployeesListView(ListView):
 class EmployeesSurnameView(ListView):
     model = Employee
     template_name = 'employees/employees_by_surname.html'
-    borders = Employee.get_groups(groups_num=6)
-    extra_context = {
-        'title': 'employees by surname',
-        'borders': borders
-    }
+    borders = None
+    # borders = Employee.get_groups(groups_num=6)
+    # print(borders)
+    # extra_context = {
+    #     'title': 'employees by surname',
+    #     'borders': borders
+    # }
 
     def get(self, request, *args, **kwargs):
+        self.borders = Employee.get_groups(groups_num=6)
         start = request.GET.get('start')
         stop = request.GET.get('stop')
         self.queryset = Employee.get_range(start, stop)
         self.paginate_by = 7
         return super(EmployeesSurnameView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({'title': 'employees by name'})
+        context.update({'borders': self.borders})
+        return context
 
 
 class EmployeeDetailView(DetailView):
