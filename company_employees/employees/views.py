@@ -29,6 +29,12 @@ class EmployeesSurnameView(ListView):
     model = Employee
     template_name = 'employees/employees_by_surname.html'
     borders = None
+    # borders = Employee.get_groups(groups_num=6)
+    # print(borders)
+    # extra_context = {
+    #     'title': 'employees by surname',
+    #     'borders': borders
+    # }
 
     def get(self, request, *args, **kwargs):
         self.borders = Employee.get_groups(groups_num=6)
