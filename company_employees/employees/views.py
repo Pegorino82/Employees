@@ -31,7 +31,7 @@ class EmployeesSurnameView(ListView):
     borders = None
 
     def get(self, request, *args, **kwargs):
-        self.borders = Employee.get_groups(groups_num=6)
+        self.borders = Employee.get_groups()
         start = request.GET.get('start')
         stop = request.GET.get('stop')
         self.queryset = Employee.get_range(start, stop)

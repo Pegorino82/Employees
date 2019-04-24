@@ -6,32 +6,33 @@ from collections import OrderedDict
 from units.models import Unit
 
 
-def separator(d, offset=1, groups_num=7):
+def separator(d, groups_num=7):
     '''
     делит сотрудников на примерно равные группы
     :param d: словарь вида {'А': 5, 'Б': 6...}
-    :param offset: отступ (вверх) от среднего количества сотрудников в группе
     :param groups_num: количество групп
     :return: список с группами
     '''
     one_group_contains = sum(d.values()) // groups_num
     groups = []
-    for key, val in d.items():
-        if not val:
-            continue
-        if not groups:
-            groups.append({'chars': [key], 'count': val})
-        if key not in groups[-1]['chars']:
-            if groups[-1]['count'] + val <= one_group_contains * offset:
-                groups[-1]['chars'].append(key)
-                groups[-1]['count'] += val
-            else:
-                groups.append({'chars': [key], 'count': val})
-    if len(groups) > groups_num:
-        offset += 0.05
-        return separator(d, offset=offset, groups_num=groups_num)
-    else:
-        return list(map(lambda x: (x['chars'][0], x['chars'][-1]), groups))
+    employees_list = [(k, v) for k, v in d.items()]
+    tmp = {'chars': [], 'count': 0}
+    count = 0
+    i = 0
+    while len(groups) < groups_num and i < len(employees_list):
+        if count <= one_group_contains:
+            count += employees_list[i][1]
+            tmp['chars'].append(employees_list[i][0])
+            tmp['count'] += employees_list[i][1]
+            i += 1
+        else:
+            groups.append(tmp)
+            tmp = {'chars': [], 'count': 0}
+            count = 0
+            employees_list = employees_list[i:]
+            i = 0
+    groups.append(tmp)
+    return list(map(lambda x: (x['chars'][0], x['chars'][-1]), groups))
 
 
 ALPHAS = []
@@ -134,7 +135,7 @@ class Employee(models.Model):
         return query
 
     @classmethod
-    def get_groups(cls, groups_num):
+    def get_groups(cls, groups_num=7):
         '''
         Возвращает список групп пользователей по фамилиям
         :param groups_num: количество групп
@@ -144,4 +145,5 @@ class Employee(models.Model):
         for char in ALPHAS:
             d[char] = cls.objects.filter(surname__startswith=char).count()
         groups = separator(d, groups_num=groups_num)
+
         return groups
